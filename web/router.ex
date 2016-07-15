@@ -19,8 +19,9 @@ defmodule PhoenixTracker.Router do
     get "/", PageController, :index
   end
 
-  # Other scopes may use custom stacks.
-  # scope "/api", PhoenixTracker do
-  #   pipe_through :api
-  # end
+  scope "/api", PhoenixTracker do
+    pipe_through :api
+
+    resources "/locations", LocationController
+  end
 end
