@@ -4,6 +4,6 @@ defmodule PhoenixTracker.LocationController do
 
   def index(conn, _params) do
     locations = Repo.all(Location)
-    render conn, locations: locations
+    render(conn, "index.json", locations: locations)
   end
 end
