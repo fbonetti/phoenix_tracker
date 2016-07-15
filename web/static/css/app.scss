@@ -5,3 +5,19 @@ body,
 .full-height {
   height: 100%;
 }
+
+.display-flex {
+  display: flex !important;
+}
+
+.flex-direction-column {
+  flex-direction: column !important;
+}
+
+.flex-1 {
+  flex: 1 !important;
+}
+
+.overflow-y-scroll {
+  overflow-y: scroll !important;
+}

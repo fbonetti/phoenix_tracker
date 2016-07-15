@@ -1,6 +1,6 @@
 port module App exposing (..)
 
-import Html exposing (Html, button, div, text, ul, li, h1)
+import Html exposing (Html, button, div, text, h1, table, thead, tbody, th, tr, td)
 import Html.Attributes exposing (class, id)
 import Html.App as Html
 import Json.Decode as JD exposing ((:=))
@@ -116,21 +116,31 @@ view : Model -> Html Msg
 view model =
   div [ class "row full-height" ]
     [ div [ id "map", class "col-sm-6" ] []
-    , div [ class "col-sm-6" ]
+    , div [ class "col-sm-6 display-flex flex-direction-column" ]
       [ h1 [] [ text "Locations" ]
-      , renderLocations model.locations
+      , div [ class "flex-1 overflow-y-scroll" ]
+          [ renderLocations model.locations
+          ]
       ]
     ]
 
 renderLocations : List Location -> Html Msg
 renderLocations locations =
-  div [] (List.map renderLocation locations)
+  table [ class "table" ]
+    [ thead []
+        [ th [] [ text "ID" ]
+        , th [] [ text "Latitude" ]
+        , th [] [ text "Longitude" ]
+        , th [] [ text "Timestamp" ]
+        ]
+    , tbody [] (List.map renderLocation locations)
+    ]
 
 renderLocation : Location -> Html Msg
 renderLocation location =
-  ul []
-    [ li [] [ toText location.id ]
-    , li [] [ toText location.latitude ]
-    , li [] [ toText location.longitude ]
-    , li [] [ toText location.recorded_at ]
+  tr []
+    [ td [] [ toText location.id ]
+    , td [] [ toText location.latitude ]
+    , td [] [ toText location.longitude ]
+    , td [] [ (unixToDate >> toText) location.recorded_at ]
     ]

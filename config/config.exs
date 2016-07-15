@@ -27,3 +27,9 @@ import_config "#{Mix.env}.exs"
 config :phoenix, :generators,
   migration: true,
   binary_id: false
+
+# Configure cron-like scheduler
+config :quantum, cron: [
+  # Every 10 minutes
+  "*/10 * * * *": &Scraper.fetch_data/0
+]
