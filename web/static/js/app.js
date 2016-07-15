@@ -3,10 +3,11 @@ const elmDiv = document.querySelector('#elm-container');
 const elmApp = Elm.App.embed(elmDiv);
 
 const createMap = function() {
-  return new google.maps.Map(document.getElementById('map'), {
-    center: {lat: 41.8781, lng: -87.6298},
-    zoom: 6
+  let mapobj = new google.maps.Map(document.getElementById('map'), {
+    center: {lat: 39.3431, lng: -99.3082},
+    zoom: 4
   });
+  return mapobj;
 };
 
 let map;
