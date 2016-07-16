@@ -1,6 +1,6 @@
 port module App exposing (..)
 
-import Html exposing (Html, button, div, text, h1, table, thead, tbody, th, tr, td, label, fieldset, select, option)
+import Html exposing (Html, button, div, text, h2, table, thead, tbody, th, tr, td, label, fieldset, select, option)
 import Html.Attributes exposing (class, id, value, selected)
 import Html.Events exposing (onInput)
 import Html.App as Html
@@ -15,7 +15,7 @@ import Set
 main : Program Never
 main =
   Html.program
-    { init = (model, getLocations)
+    { init = (model, fetchLocations)
     , view = view
     , update = update
     , subscriptions = subscriptions
@@ -70,11 +70,19 @@ update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
   case msg of
     SetLocations locations ->
-      ( { model | locations = locations }, outgoingLocations locations )
+      let
+        model' = { model | locations = locations }
+        cmd = (filteredLocations >> outgoingLocations) model'
+      in
+        ( model',  cmd )
     SetError error ->
       ( { model | error = toString error }, Cmd.none )
     SetDateFilter dateFilter ->
-      ( { model | dateFilter = dateFilter }, Cmd.none )
+      let
+        model' = { model | dateFilter = dateFilter }
+        cmd = (filteredLocations >> outgoingLocations) model'
+      in
+        ( model',  cmd )
     NoOp ->
       ( model, Cmd.none )
 
@@ -90,8 +98,8 @@ filteredLocations { dateFilter, locations } =
 -- COMMANDS
 
 
-getLocations : Cmd Msg
-getLocations =
+fetchLocations : Cmd Msg
+fetchLocations =
   Http.get locationsDecoder "/api/locations"
     |> Task.perform SetError SetLocations
 
@@ -127,7 +135,8 @@ locationsDecoder =
 
 uniqueLocationDates : List Location -> List String
 uniqueLocationDates locations =
-  List.map (\location -> (unixToDate >> dateToIso) location.recordedAt) locations
+  let a = Debug.log "locations" locations
+  in List.map (\location -> (unixToDate >> dateToIso) location.recordedAt) locations
     |> Set.fromList
     |> Set.toList
     |> List.reverse
@@ -144,9 +153,9 @@ view model =
   div [ class "row full-height" ]
     [ div [ id "map", class "col-sm-6" ] []
     , div [ class "col-sm-6 display-flex flex-direction-column" ]
-      [ h1 [] [ text "Locations" ]
+      [ h2 [] [ text "Locations" ]
       , div [ class "row" ]
-          [ div [ class "col-sm-6" ] [ dateFilter model ]
+          [ div [ class "col-sm-6" ] [ renderDateFilter model ]
           ]
       , div [ class "flex-1 overflow-y-scroll" ]
           [ renderLocations (filteredLocations model)
@@ -154,8 +163,8 @@ view model =
       ]
     ]
 
-dateFilter : Model -> Html Msg
-dateFilter { locations, dateFilter } =
+renderDateFilter : Model -> Html Msg
+renderDateFilter { locations, dateFilter } =
   let
     options = List.map
       (\date -> option [ value date, selected (date == dateFilter) ] [ text date ])
