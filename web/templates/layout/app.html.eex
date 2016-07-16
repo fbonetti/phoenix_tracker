@@ -13,7 +13,7 @@
 
   <body>
     <%= render @view_module, @view_template, assigns %>
-    <script defer src="https://maps.googleapis.com/maps/api/js"></script>
+    <script defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDSVMRbBDZkC-Pr1wOolNIM3YdoIsuhrUM"></script>
     <script defer src="<%= static_path(@conn, "/js/app.js") %>"></script>
   </body>
 </html>
