@@ -19,7 +19,7 @@ defmodule PhoenixTracker.Mixfile do
   def application do
     [mod: {PhoenixTracker, []},
      applications: [:phoenix, :phoenix_html, :cowboy, :logger, :gettext,
-                    :phoenix_ecto, :postgrex, :quantum, :httpotion]]
+                    :phoenix_ecto, :postgrex, :httpotion]]
   end
 
   # Specifies which paths to compile per environment.
@@ -37,7 +37,6 @@ defmodule PhoenixTracker.Mixfile do
      {:phoenix_live_reload, "~> 1.0", only: :dev},
      {:gettext, "~> 0.9"},
      {:cowboy, "~> 1.0"},
-     {:quantum, ">= 1.7.1"},
      {:httpotion, "~> 3.0.0"},
      {:poison, "~> 2.0"}]
   end

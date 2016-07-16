@@ -12,6 +12,7 @@ const createMap = function() {
 
 let map;
 let markers = [];
+let markerPath;
 
 elmApp.ports.outgoingLocations.subscribe(function(locations) {
   map = map || createMap();
@@ -20,7 +21,12 @@ elmApp.ports.outgoingLocations.subscribe(function(locations) {
     marker.setMap(null);
   });
 
+  if (markerPath) {
+    markerPath.setMap(null);
+  }
+
   const bounds = new google.maps.LatLngBounds();
+  const pathCoordinates = [];
 
   markers = locations.map(location => {
     const marker = new google.maps.Marker({
@@ -32,8 +38,17 @@ elmApp.ports.outgoingLocations.subscribe(function(locations) {
     });
 
     bounds.extend(marker.getPosition());
+    pathCoordinates.push({ lat: location.latitude, lng: location.longitude });
     return marker;
   });
 
+  markerPath = new google.maps.Polyline({
+    path: pathCoordinates,
+    strokeColor: '#FF0000',
+    strokeOpacity: 1.0,
+    strokeWeight: 2
+  });
+
   map.fitBounds(bounds);
+  markerPath.setMap(map);
 });
