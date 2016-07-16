@@ -16,7 +16,7 @@ defmodule Scraper do
     Enum.each(messages, fn(message) ->
       fields = %{
         id: message["id"],
-        latitude: message["latitude"],  
+        latitude: message["latitude"],
         longitude: message["longitude"],
         recorded_at: :calendar.gregorian_seconds_to_datetime(message["unixTime"] + epoch),
         battery_state: message["batteryState"]
