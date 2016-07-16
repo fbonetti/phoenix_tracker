@@ -1,12 +1,14 @@
 port module App exposing (..)
 
-import Html exposing (Html, button, div, text, h1, table, thead, tbody, th, tr, td)
-import Html.Attributes exposing (class, id)
+import Html exposing (Html, button, div, text, h1, table, thead, tbody, th, tr, td, label, fieldset, select, option)
+import Html.Attributes exposing (class, id, value)
+import Html.Events exposing (onInput)
 import Html.App as Html
 import Json.Decode as JD exposing ((:=))
 import Http
 import Task exposing (Task)
 import Date exposing (Date)
+import Date.Format
 
 
 main : Program Never
@@ -34,6 +36,7 @@ subscriptions model =
 type alias Model =
   { locations : List Location
   , error : String
+  , dateFilter : String
   }
 
 type alias Location =
@@ -48,6 +51,7 @@ model : Model
 model =
   { locations = []
   , error = ""
+  , dateFilter = ""
   }
 
 
@@ -57,6 +61,7 @@ model =
 type Msg
   = SetLocations (List Location)
   | SetError Http.Error
+  | SetDateFilter String
   | NoOp
 
 
@@ -67,9 +72,19 @@ update msg model =
       ( { model | locations = locations }, outgoingLocations locations )
     SetError error ->
       ( { model | error = toString error }, Cmd.none )
+    SetDateFilter dateFilter ->
+      ( { model | dateFilter = dateFilter }, Cmd.none )
     NoOp ->
       ( model, Cmd.none )
 
+filteredLocations : Model -> List Location
+filteredLocations { dateFilter, locations } =
+  if dateFilter == "" then
+    locations
+  else
+    List.filter
+      (\location -> (unixToDate >> dateToIso) location.recordedAt == dateFilter)
+      locations
 
 -- COMMANDS
 
@@ -87,6 +102,9 @@ unixToDate : Float -> Date
 unixToDate =
   (*) 1000 >> Date.fromTime
 
+dateToIso : Date -> String
+dateToIso =
+  Date.Format "%Y-%m-%d"
 
 -- DECODERS
 
@@ -120,8 +138,16 @@ view model =
     [ div [ id "map", class "col-sm-6" ] []
     , div [ class "col-sm-6 display-flex flex-direction-column" ]
       [ h1 [] [ text "Locations" ]
+      , fieldset [ class "form-group" ]
+          [ label [] [ text "Date" ]
+          , select [ class "form-control", onInput SetDateFilter ]
+              [ option [ value "" ] [ text "Show all" ]
+              , option [ value "2016-07-14" ] [ text "2016-07-14" ]
+              , option [ value "2016-07-13" ] [ text "2016-07-13" ]
+              ]
+          ]
       , div [ class "flex-1 overflow-y-scroll" ]
-          [ renderLocations model.locations
+          [ renderLocations (filteredLocations model.locations)
           ]
       ]
     ]
