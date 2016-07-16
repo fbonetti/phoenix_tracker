@@ -104,7 +104,7 @@ unixToDate =
 
 dateToIso : Date -> String
 dateToIso =
-  Date.Format "%Y-%m-%d"
+  Date.Format.format "%Y-%m-%d"
 
 -- DECODERS
 
@@ -137,7 +137,7 @@ view model =
   div [ class "row full-height" ]
     [ div [ id "map", class "col-sm-6" ] []
     , div [ class "col-sm-6 display-flex flex-direction-column" ]
-      [ h1 [] [ text "Locations test" ]
+      [ h1 [] [ text "Locations" ]
       , fieldset [ class "form-group" ]
           [ label [] [ text "Date" ]
           , select [ class "form-control", onInput SetDateFilter ]
@@ -147,7 +147,7 @@ view model =
               ]
           ]
       , div [ class "flex-1 overflow-y-scroll" ]
-          [ renderLocations (filteredLocations model.locations)
+          [ renderLocations (filteredLocations model)
           ]
       ]
     ]
