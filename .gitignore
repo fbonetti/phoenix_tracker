@@ -26,3 +26,4 @@ erl_crash.dump
 
 # Ignore Elm stuff
 /web/elm/elm-stuff
+/web/elm/build
