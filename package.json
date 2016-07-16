@@ -1,5 +1,8 @@
 {
   "repository": {},
+  "scripts": {
+    "preinstall": "npm install -g elm"
+  },
   "dependencies": {
     "babel-brunch": "~6.0.0",
     "bootstrap": "^4.0.0-alpha.2",
