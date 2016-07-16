@@ -135,8 +135,7 @@ locationsDecoder =
 
 uniqueLocationDates : List Location -> List String
 uniqueLocationDates locations =
-  let a = Debug.log "locations" locations
-  in List.map (\location -> (unixToDate >> dateToIso) location.recordedAt) locations
+  List.map (\location -> (unixToDate >> dateToIso) location.recordedAt) locations
     |> Set.fromList
     |> Set.toList
     |> List.reverse

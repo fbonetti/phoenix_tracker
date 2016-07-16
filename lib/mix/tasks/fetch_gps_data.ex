@@ -1,10 +1,16 @@
-defmodule Scraper do
+defmodule Mix.Tasks.FetchGpsData do
+  use Mix.Task
   alias PhoenixTracker.Location
   alias PhoenixTracker.Repo
-
-  def fetch_data do
+  require HTTPotion
+  
+  def run(_args) do
     key = "0GbguunS8LnHtdnrO6132nvJJqZhY4qo3"
     url = "https://api.findmespot.com/spot-main-web/consumer/rest-api/2.0/public/feed/#{key}/message.json"
+    
+    HTTPotion.start
+    Repo.start_link
+
     response = HTTPotion.get url
     {:ok, %{"response" =>
       %{"feedMessageResponse" =>
@@ -36,5 +42,4 @@ defmodule Scraper do
       end
     end)
   end
-
 end
