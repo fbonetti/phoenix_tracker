@@ -40,7 +40,8 @@ type alias Location =
   { id : Int
   , latitude : Float
   , longitude : Float
-  , recorded_at : Float
+  , recordedAt : Float
+  , batteryState : String
   }
 
 model : Model
@@ -92,12 +93,13 @@ unixToDate =
 
 locationDecoder : JD.Decoder Location
 locationDecoder =
-  JD.object4
+  JD.object5
     Location
     ("id" := JD.int)
     ("latitude" := JD.float)
     ("longitude" := JD.float)
     ("recorded_at" := JD.float)
+    ("battery_state" := JD.string)
     
 
 locationsDecoder : JD.Decoder (List Location)
@@ -126,12 +128,13 @@ view model =
 
 renderLocations : List Location -> Html Msg
 renderLocations locations =
-  table [ class "table" ]
+  table [ class "table table-sm" ]
     [ thead []
         [ th [] [ text "ID" ]
         , th [] [ text "Latitude" ]
         , th [] [ text "Longitude" ]
         , th [] [ text "Timestamp" ]
+        , th [] [ text "Battery" ]
         ]
     , tbody [] (List.map renderLocation locations)
     ]
@@ -142,5 +145,6 @@ renderLocation location =
     [ td [] [ toText location.id ]
     , td [] [ toText location.latitude ]
     , td [] [ toText location.longitude ]
-    , td [] [ (unixToDate >> toText) location.recorded_at ]
+    , td [] [ (unixToDate >> toText) location.recordedAt ]
+    , td [] [ text location.batteryState ]
     ]

@@ -12,6 +12,7 @@ defmodule PhoenixTracker.LocationView do
       recorded_at: location.recorded_at
         |> Ecto.DateTime.to_erl
         |> :calendar.datetime_to_gregorian_seconds
-        |> -(:calendar.datetime_to_gregorian_seconds({{1970, 1, 1}, {0, 0, 0}})) }
+        |> -(:calendar.datetime_to_gregorian_seconds({{1970, 1, 1}, {0, 0, 0}})),
+      battery_state: location.battery_state }
   end
 end

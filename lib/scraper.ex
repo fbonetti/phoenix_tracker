@@ -15,17 +15,24 @@ defmodule Scraper do
 
     Enum.each(messages, fn(message) ->
       fields = %{
-        latitude: message["latitude"],
+        id: message["id"],
+        latitude: message["latitude"],  
         longitude: message["longitude"],
-        recorded_at: :calendar.gregorian_seconds_to_datetime(message["unixTime"] + epoch)
+        recorded_at: :calendar.gregorian_seconds_to_datetime(message["unixTime"] + epoch),
+        battery_state: message["batteryState"]
       }
 
       changeset = Location.changeset(%Location{}, fields)
-      case Repo.insert(changeset) do
-        {:ok, _location} ->
-          IO.puts "success"
-        {:error, changes} ->
-          IO.inspect changes
+
+      if Repo.get(Location, message["id"]) do
+        IO.puts "location with ID: #{message["id"]} already exists"
+      else
+        case Repo.insert(changeset) do
+          {:ok, _location} ->
+            IO.puts "success"
+          {:error, changes} ->
+            IO.inspect changes
+        end
       end
     end)
   end

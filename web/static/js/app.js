@@ -20,13 +20,20 @@ elmApp.ports.outgoingLocations.subscribe(function(locations) {
     marker.setMap(null);
   });
 
+  const bounds = new google.maps.LatLngBounds();
+
   markers = locations.map(location => {
-    return new google.maps.Marker({
+    const marker = new google.maps.Marker({
       position: {
         lat: location.latitude,
         lng: location.longitude
       },
       map: map
     });
+
+    bounds.extend(marker.getPosition());
+    return marker;
   });
+
+  map.fitBounds(bounds);
 });
