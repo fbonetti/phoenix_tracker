@@ -1,7 +1,7 @@
 port module App exposing (..)
 
 import Html exposing (Html, button, div, text, h1, table, thead, tbody, th, tr, td, label, fieldset, select, option)
-import Html.Attributes exposing (class, id, value)
+import Html.Attributes exposing (class, id, value, selected)
 import Html.Events exposing (onInput)
 import Html.App as Html
 import Json.Decode as JD exposing ((:=))
@@ -9,6 +9,7 @@ import Http
 import Task exposing (Task)
 import Date exposing (Date)
 import Date.Format
+import Set
 
 
 main : Program Never
@@ -124,6 +125,12 @@ locationsDecoder : JD.Decoder (List Location)
 locationsDecoder =
   JD.list locationDecoder
 
+uniqueLocationDates : List Location -> List String
+uniqueLocationDates locations =
+  List.map (\location -> (unixToDate >> dateToIso) location.recordedAt) locations
+    |> Set.fromList
+    |> Set.toList
+    |> List.reverse
 
 -- VIEW
 
@@ -138,19 +145,27 @@ view model =
     [ div [ id "map", class "col-sm-6" ] []
     , div [ class "col-sm-6 display-flex flex-direction-column" ]
       [ h1 [] [ text "Locations" ]
-      , fieldset [ class "form-group" ]
-          [ label [] [ text "Date" ]
-          , select [ class "form-control", onInput SetDateFilter ]
-              [ option [ value "" ] [ text "Show all" ]
-              , option [ value "2016-07-14" ] [ text "2016-07-14" ]
-              , option [ value "2016-07-13" ] [ text "2016-07-13" ]
-              ]
+      , div [ class "row" ]
+          [ div [ class "col-sm-6" ] [ dateFilter model ]
           ]
       , div [ class "flex-1 overflow-y-scroll" ]
           [ renderLocations (filteredLocations model)
           ]
       ]
     ]
+
+dateFilter : Model -> Html Msg
+dateFilter { locations, dateFilter } =
+  let
+    options = List.map
+      (\date -> option [ value date, selected (date == dateFilter) ] [ text date ])
+      (uniqueLocationDates locations)
+  in
+    fieldset [ class "form-group" ]
+      [ label [] [ text "Date" ]
+      , select [ class "form-control", onInput SetDateFilter ]
+          ([ option [ value "" ] [ text "Show all" ] ] ++ options)
+      ]
 
 renderLocations : List Location -> Html Msg
 renderLocations locations =
