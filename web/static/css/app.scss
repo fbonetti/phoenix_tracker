@@ -32,14 +32,27 @@ body {
   display: flex;
   flex-direction: column;
   flex: 1;
+  padding: 10px;
+
+  .location-list {
+    overflow-y: scroll;
+  }
 
   .location-block {
     display: flex;
     flex-direction: row;
     padding: 5px;
-    background-color: yellow;
-    border: 1px solid black;
+    border-top: 1px solid black;
     justify-content: center;
+    cursor: pointer;
+
+    &:first-child {
+      border: none;
+    }
+
+    &:hover {
+      background-color: lightgrey;
+    }
 
     @media (max-width: $tablet-breakpoint) {
       flex-direction: column;

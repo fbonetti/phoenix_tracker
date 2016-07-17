@@ -163,9 +163,7 @@ view model =
       , div [ class "filters" ]
           [ renderDateFilter model
           ]
-      , div [ class "stuff" ]
-          [ renderLocations (filteredLocations model)
-          ]
+      , renderLocations (filteredLocations model)
       ]
     ]
 
@@ -181,7 +179,7 @@ renderDateFilter { locations, dateFilter } =
 
 renderLocations : List Location -> Html Msg
 renderLocations locations =
-  div [] (List.map renderLocation locations)
+  div [ class "location-list" ] (List.map renderLocation locations)
 
 renderLocation : Location -> Html Msg
 renderLocation location =
