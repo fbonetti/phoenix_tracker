@@ -54,6 +54,7 @@ exports.config = {
   // Configure your plugins
   plugins: {
     elmBrunch: {
+      executablePath: "../../node_modules/elm/binwrappers",
       elmFolder: "web/elm",
       mainModules: ["src/Main.elm"],
       outputFolder: "../static/vendor"
