@@ -1,4 +1,5 @@
-@import 'font-awesome';
+@import "font-awesome";
+@import "weather-icons";
 
 $tablet-breakpoint: 992px;
 
@@ -8,6 +9,14 @@ body {
   margin: 0;
   padding: 0;
   font-family: 'Roboto', sans-serif;
+}
+
+.flex-1 {
+  flex: 1;
+}
+
+.text-right {
+  text-align: right;
 }
 
 #elm-container {
@@ -21,7 +30,7 @@ body {
 }
 
 #map {
-  flex: 0 0 50%;
+  flex: 1;
 
   @media (max-width: $tablet-breakpoint) {
     flex: 0 0 33%;
@@ -31,19 +40,20 @@ body {
 #info {
   display: flex;
   flex-direction: column;
-  flex: 1;
+  flex-basis: 500px;
   padding: 10px;
+
+  @media (max-width: $tablet-breakpoint) {
+    flex: 1;
+  }
 
   .location-list {
     overflow-y: scroll;
   }
 
   .location-block {
-    display: flex;
-    flex-direction: row;
     padding: 5px;
     border-top: 1px solid black;
-    justify-content: center;
     cursor: pointer;
 
     &:first-child {
@@ -54,24 +64,12 @@ body {
       background-color: lightgrey;
     }
 
-    @media (max-width: $tablet-breakpoint) {
-      flex-direction: column;
-    }
-
-    .location-coordinates {
-      flex: 1;
+    .location-info {
+      display: flex;
+      flex-direction: row;
     }
 
     .location-timestamp {
-    }
-
-    .location-battery {
-      flex: 1;
-      text-align: right;
-
-      @media (max-width: $tablet-breakpoint) {
-        text-align: left;
-      }
     }
   }
 }

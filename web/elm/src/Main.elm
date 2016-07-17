@@ -184,14 +184,17 @@ renderLocations locations =
 renderLocation : Location -> Html Msg
 renderLocation location =
   div [ class "location-block", onClick (SelectLocation location) ]
-    [ div [ class "location-coordinates" ]
+    [ div [ class "location-info" ]
+      [ div [ class "flex-1" ]
         [ (coordinatesToString >> text) ( location.latitude, location.longitude )
         ]
+      , div [ class "flex-1 text-right" ]
+        [ weatherIcon ""
+        , batteryStateIcon location.batteryState
+        ]
+      ]
     , div [ class "location-timestamp" ]
         [ (unixToDate >> toText) location.recordedAt
-        ]
-    , div [ class "location-battery" ]
-        [ batteryStateIcon location.batteryState
         ]
     ]
 
@@ -202,3 +205,7 @@ batteryStateIcon batteryState =
       i [ class "fa fa-battery-full" ] []
     _ ->
       i [ class "fa fa-battery-full" ] []
+
+weatherIcon : String -> Html Msg
+weatherIcon _ =
+  i [ class "wi wi-day-lightning" ] []  

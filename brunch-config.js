@@ -34,7 +34,8 @@ exports.config = {
     // will be copied to `paths.public`, which is "priv/static" by default.
     assets: [
       /^(web\/static\/assets)/,
-      /^(node_modules\/font-awesome)/
+      /^(node_modules\/font-awesome)/,
+      /^(node_modules\/weather-icons)/
     ]
   },
 
@@ -49,7 +50,11 @@ exports.config = {
       'node_modules/font-awesome/fonts/fontawesome-webfont.svg',
       'node_modules/font-awesome/fonts/fontawesome-webfont.ttf',
       'node_modules/font-awesome/fonts/fontawesome-webfont.woff',
-      'node_modules/font-awesome/fonts/fontawesome-webfont.woff2'
+      'node_modules/font-awesome/fonts/fontawesome-webfont.woff2',
+      'node_modules/weather-icons/font/weathericons-regular-webfont.eot',
+      'node_modules/weather-icons/font/weathericons-regular-webfont.svg',
+      'node_modules/weather-icons/font/weathericons-regular-webfont.ttf',
+      'node_modules/weather-icons/font/weathericons-regular-webfont.woff'
     ],
 
     // Where to compile files to
@@ -72,7 +77,8 @@ exports.config = {
       options: {
         includePaths: [
           'node_modules/bootstrap/scss',
-          'node_modules/font-awesome/scss'
+          'node_modules/font-awesome/scss',
+          'node_modules/weather-icons/css'
         ]
       }
     }
