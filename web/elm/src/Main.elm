@@ -11,6 +11,7 @@ import Date exposing (Date)
 import Date.Format
 import Set
 import String
+import Dict
 
 
 main : Program Never
@@ -128,6 +129,13 @@ formatTimestamp : Date -> String
 formatTimestamp =
   Date.Format.format "%a, %b %d %Y @ %l:%M:%S %P"
 
+uniqBy : (a -> comparable) -> List a -> List a
+uniqBy fn =
+  let
+    buildDict = List.foldl (\item dict -> Dict.insert (fn item) item dict) Dict.empty
+  in
+    buildDict >> Dict.values
+
 -- DECODERS
 
 
@@ -146,11 +154,10 @@ locationsDecoder : JD.Decoder (List Location)
 locationsDecoder =
   JD.list locationDecoder
 
-uniqueLocationDates : List Location -> List String
+uniqueLocationDates : List Location -> List Date
 uniqueLocationDates locations =
-  List.map (\location -> (unixToDate >> dateToIso) location.recordedAt) locations
-    |> Set.fromList
-    |> Set.toList
+  List.map (\location -> unixToDate location.recordedAt) locations
+    |> uniqBy dateToIso
     |> List.reverse
 
 -- VIEW
@@ -175,9 +182,13 @@ view model =
 renderDateFilter : Model -> Html Msg
 renderDateFilter { locations, dateFilter } =
   let
-    options = List.map
-      (\date -> option [ value date, selected (date == dateFilter) ] [ text date ])
-      (uniqueLocationDates locations)
+    mapping date =
+      let
+        value' = dateToIso date
+        label' = Date.Format.format "%a, %b %d %Y" date
+      in
+        option [ value value', selected (value' == dateFilter) ] [ text label' ]
+    options = List.map mapping (uniqueLocationDates locations)
   in
     select [ class "form-control", onInput SetDateFilter ]
         ([ option [ value "" ] [ text "Show all" ] ] ++ options)
