@@ -52,3 +52,8 @@ elmApp.ports.outgoingLocations.subscribe(function(locations) {
   map.fitBounds(bounds);
   markerPath.setMap(map);
 });
+
+elmApp.ports.selectLocation.subscribe(function(location) {
+  map = map || createMap();
+  map.setCenter({ lat: location.latitude, lng: location.longitude });
+});

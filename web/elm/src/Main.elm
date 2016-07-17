@@ -2,7 +2,7 @@ port module App exposing (..)
 
 import Html exposing (Html, button, div, text, h2, table, thead, tbody, th, tr, td, label, fieldset, select, option)
 import Html.Attributes exposing (class, id, value, selected)
-import Html.Events exposing (onInput)
+import Html.Events exposing (onInput, onClick)
 import Html.App as Html
 import Json.Decode as JD exposing ((:=))
 import Http
@@ -21,7 +21,6 @@ main =
     , subscriptions = subscriptions
     }
 
-port outgoingLocations : List Location -> Cmd msg
 
 -- SUBSCRIPTIONS
 
@@ -63,6 +62,7 @@ type Msg
   = SetLocations (List Location)
   | SetError Http.Error
   | SetDateFilter String
+  | SelectLocation Location
   | NoOp
 
 
@@ -83,6 +83,8 @@ update msg model =
         cmd = (filteredLocations >> outgoingLocations) model'
       in
         ( model',  cmd )
+    SelectLocation location ->
+      ( model, selectLocation location )
     NoOp ->
       ( model, Cmd.none )
 
@@ -97,6 +99,8 @@ filteredLocations { dateFilter, locations } =
 
 -- COMMANDS
 
+port outgoingLocations : List Location -> Cmd msg
+port selectLocation : Location -> Cmd msg
 
 fetchLocations : Cmd Msg
 fetchLocations =
@@ -177,20 +181,22 @@ renderDateFilter { locations, dateFilter } =
 
 renderLocations : List Location -> Html Msg
 renderLocations locations =
-  table [ class "table table-sm" ]
+  table [ class "locations-table table table-sm table-hover" ]
     [ thead []
-        [ th [] [ text "ID" ]
-        , th [] [ text "Latitude" ]
-        , th [] [ text "Longitude" ]
-        , th [] [ text "Timestamp" ]
-        , th [] [ text "Battery" ]
+        [ tr []
+            [ th [] [ text "ID" ]
+            , th [] [ text "Latitude" ]
+            , th [] [ text "Longitude" ]
+            , th [] [ text "Timestamp" ]
+            , th [] [ text "Battery" ]
+            ]
         ]
     , tbody [] (List.map renderLocation locations)
     ]
 
 renderLocation : Location -> Html Msg
 renderLocation location =
-  tr []
+  tr [ onClick (SelectLocation location) ]
     [ td [] [ toText location.id ]
     , td [] [ toText location.latitude ]
     , td [] [ toText location.longitude ]
