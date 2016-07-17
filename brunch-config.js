@@ -44,7 +44,12 @@ exports.config = {
     watched: [
       "web/static",
       "test/static",
-      "web/elm"
+      "web/elm",
+      'node_modules/font-awesome/fonts/fontawesome-webfont.eot',
+      'node_modules/font-awesome/fonts/fontawesome-webfont.svg',
+      'node_modules/font-awesome/fonts/fontawesome-webfont.ttf',
+      'node_modules/font-awesome/fonts/fontawesome-webfont.woff',
+      'node_modules/font-awesome/fonts/fontawesome-webfont.woff2'
     ],
 
     // Where to compile files to
