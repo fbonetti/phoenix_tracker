@@ -33,7 +33,7 @@ body {
   flex: 1;
 
   @media (max-width: $tablet-breakpoint) {
-    flex: 0 0 33%;
+    flex: 0 0 40%;
   }
 }
 
@@ -55,6 +55,10 @@ body {
     padding: 5px;
     border-top: 1px solid black;
     cursor: pointer;
+
+    @media (max-width: $tablet-breakpoint) {
+      font-size: 0.825rem;
+    }
 
     &:first-child {
       border: none;

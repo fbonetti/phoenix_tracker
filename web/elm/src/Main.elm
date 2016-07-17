@@ -10,6 +10,7 @@ import Task exposing (Task)
 import Date exposing (Date)
 import Date.Format
 import Set
+import String
 
 
 main : Program Never
@@ -123,6 +124,10 @@ coordinatesToString : ( Float, Float ) -> String
 coordinatesToString ( latitude, longitude ) =
   (toString latitude) ++ ", " ++ (toString longitude)
 
+formatTimestamp : Date -> String
+formatTimestamp =
+  toString >> String.slice 1 -1
+
 -- DECODERS
 
 
@@ -185,17 +190,14 @@ renderLocation : Location -> Html Msg
 renderLocation location =
   div [ class "location-block", onClick (SelectLocation location) ]
     [ div [ class "location-info" ]
-      [ div [ class "flex-1" ]
-        [ (coordinatesToString >> text) ( location.latitude, location.longitude )
+      [ div []
+        [ (unixToDate >> formatTimestamp >> text) location.recordedAt
         ]
       , div [ class "flex-1 text-right" ]
         [ weatherIcon ""
         , batteryStateIcon location.batteryState
         ]
       ]
-    , div [ class "location-timestamp" ]
-        [ (unixToDate >> toText) location.recordedAt
-        ]
     ]
 
 batteryStateIcon : String -> Html Msg
