@@ -171,7 +171,7 @@ view model =
   div [ id "elm-container" ]
     [ div [ id "map" ] []
     , div [ id "info" ]
-      [ h2 [] [ text "Locations" ]
+      [ h2 [ class "title" ] [ text "Locations" ]
       , div [ class "filters" ]
           [ renderDateFilter model
           ]
