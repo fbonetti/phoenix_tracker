@@ -1,3 +1,5 @@
+@import 'font-awesome';
+
 $tablet-breakpoint: 992px;
 
 html,
@@ -31,14 +33,31 @@ body {
   flex-direction: column;
   flex: 1;
 
-  .locations-table {
-    width: 100%;    
+  .location-block {
+    display: flex;
+    flex-direction: row;
+    padding: 5px;
+    background-color: yellow;
+    border: 1px solid black;
+    justify-content: center;
 
-    tbody {
-      overflow-y: scroll;
+    @media (max-width: $tablet-breakpoint) {
+      flex-direction: column;
+    }
 
-      tr {
-        cursor: pointer;
+    .location-coordinates {
+      flex: 1;
+    }
+
+    .location-timestamp {
+    }
+
+    .location-battery {
+      flex: 1;
+      text-align: right;
+
+      @media (max-width: $tablet-breakpoint) {
+        text-align: left;
       }
     }
   }

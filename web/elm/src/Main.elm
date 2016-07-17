@@ -1,6 +1,6 @@
 port module App exposing (..)
 
-import Html exposing (Html, button, div, text, h2, table, thead, tbody, th, tr, td, label, fieldset, select, option)
+import Html exposing (Html, button, div, text, h2, select, option, span, i)
 import Html.Attributes exposing (class, id, value, selected)
 import Html.Events exposing (onInput, onClick)
 import Html.App as Html
@@ -119,6 +119,10 @@ dateToIso : Date -> String
 dateToIso =
   Date.Format.format "%Y-%m-%d"
 
+coordinatesToString : ( Float, Float ) -> String
+coordinatesToString ( latitude, longitude ) =
+  (toString latitude) ++ ", " ++ (toString longitude)
+
 -- DECODERS
 
 
@@ -159,7 +163,9 @@ view model =
       , div [ class "filters" ]
           [ renderDateFilter model
           ]
-      , renderLocations (filteredLocations model)
+      , div [ class "stuff" ]
+          [ renderLocations (filteredLocations model)
+          ]
       ]
     ]
 
@@ -175,23 +181,26 @@ renderDateFilter { locations, dateFilter } =
 
 renderLocations : List Location -> Html Msg
 renderLocations locations =
-  table [ class "locations-table" ]
-    [ thead []
-        [ tr []
-            [ th [] [ text "Latitude" ]
-            , th [] [ text "Longitude" ]
-            , th [] [ text "Timestamp" ]
-            , th [] [ text "Battery" ]
-            ]
-        ]
-    , tbody [] (List.map renderLocation locations)
-    ]
+  div [] (List.map renderLocation locations)
 
 renderLocation : Location -> Html Msg
 renderLocation location =
-  tr [ onClick (SelectLocation location) ]
-    [ td [] [ toText location.latitude ]
-    , td [] [ toText location.longitude ]
-    , td [] [ (unixToDate >> toText) location.recordedAt ]
-    , td [] [ text location.batteryState ]
+  div [ class "location-block", onClick (SelectLocation location) ]
+    [ div [ class "location-coordinates" ]
+        [ (coordinatesToString >> text) ( location.latitude, location.longitude )
+        ]
+    , div [ class "location-timestamp" ]
+        [ (unixToDate >> toText) location.recordedAt
+        ]
+    , div [ class "location-battery" ]
+        [ batteryStateIcon location.batteryState
+        ]
     ]
+
+batteryStateIcon : String -> Html Msg
+batteryStateIcon batteryState =
+  case batteryState of
+    "GOOD" ->
+      i [ class "fa fa-battery-full" ] []
+    _ ->
+      i [ class "fa fa-battery-full" ] []
