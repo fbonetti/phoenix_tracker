@@ -146,23 +146,20 @@ uniqueLocationDates locations =
 
 -- VIEW
 
-
 toText : a -> Html Msg
 toText =
   toString >> text
 
 view : Model -> Html Msg
 view model =
-  div [ class "row full-height" ]
-    [ div [ id "map", class "col-sm-6" ] []
-    , div [ class "col-sm-6 display-flex flex-direction-column" ]
+  div [ id "elm-container" ]
+    [ div [ id "map" ] []
+    , div [ id "info" ]
       [ h2 [] [ text "Locations" ]
-      , div [ class "row" ]
-          [ div [ class "col-sm-6" ] [ renderDateFilter model ]
+      , div [ class "filters" ]
+          [ renderDateFilter model
           ]
-      , div [ class "flex-1 overflow-y-scroll" ]
-          [ renderLocations (filteredLocations model)
-          ]
+      , renderLocations (filteredLocations model)
       ]
     ]
 
@@ -173,19 +170,15 @@ renderDateFilter { locations, dateFilter } =
       (\date -> option [ value date, selected (date == dateFilter) ] [ text date ])
       (uniqueLocationDates locations)
   in
-    fieldset [ class "form-group" ]
-      [ label [] [ text "Date" ]
-      , select [ class "form-control", onInput SetDateFilter ]
-          ([ option [ value "" ] [ text "Show all" ] ] ++ options)
-      ]
+    select [ class "form-control", onInput SetDateFilter ]
+        ([ option [ value "" ] [ text "Show all" ] ] ++ options)
 
 renderLocations : List Location -> Html Msg
 renderLocations locations =
-  table [ class "locations-table table table-sm table-hover" ]
+  table [ class "locations-table" ]
     [ thead []
         [ tr []
-            [ th [] [ text "ID" ]
-            , th [] [ text "Latitude" ]
+            [ th [] [ text "Latitude" ]
             , th [] [ text "Longitude" ]
             , th [] [ text "Timestamp" ]
             , th [] [ text "Battery" ]
@@ -197,8 +190,7 @@ renderLocations locations =
 renderLocation : Location -> Html Msg
 renderLocation location =
   tr [ onClick (SelectLocation location) ]
-    [ td [] [ toText location.id ]
-    , td [] [ toText location.latitude ]
+    [ td [] [ toText location.latitude ]
     , td [] [ toText location.longitude ]
     , td [] [ (unixToDate >> toText) location.recordedAt ]
     , td [] [ text location.batteryState ]

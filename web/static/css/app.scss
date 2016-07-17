@@ -1,39 +1,45 @@
-
-
-@import "bootstrap-flex";
+$tablet-breakpoint: 992px;
 
 html,
-body,
-.full-height {
+body {
   height: 100%;
+  margin: 0;
+  padding: 0;
+  font-family: 'Roboto', sans-serif;
 }
 
-.display-flex {
-  display: flex !important;
-}
+#elm-container {
+  height: 100%;
+  display: flex;
+  flex-direction: row;
 
-.flex-direction-column {
-  flex-direction: column !important;
-}
-
-.flex-1 {
-  flex: 1 !important;
-}
-
-.overflow-y-scroll {
-  overflow-y: scroll !important;
+  @media (max-width: $tablet-breakpoint) {
+    flex-direction: column;
+  }
 }
 
 #map {
-  min-height: 100vh;
+  flex: 0 0 50%;
 
-  width: 100%;
+  @media (max-width: $tablet-breakpoint) {
+    flex: 0 0 33%;
+  }
 }
 
-.locations-table {
-  tbody {
-    tr {
-      cursor: pointer;
+#info {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+
+  .locations-table {
+    width: 100%;    
+
+    tbody {
+      overflow-y: scroll;
+
+      tr {
+        cursor: pointer;
+      }
     }
   }
 }
