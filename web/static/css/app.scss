@@ -56,10 +56,6 @@ body {
     border-top: 1px solid black;
     cursor: pointer;
 
-    @media (max-width: $tablet-breakpoint) {
-      font-size: 0.825rem;
-    }
-
     &:first-child {
       border: none;
     }

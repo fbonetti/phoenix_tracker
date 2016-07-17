@@ -126,7 +126,7 @@ coordinatesToString ( latitude, longitude ) =
 
 formatTimestamp : Date -> String
 formatTimestamp =
-  toString >> String.slice 1 -1
+  Date.Format.format "%a, %b %d %Y @ %l:%M:%S %P"
 
 -- DECODERS
 
