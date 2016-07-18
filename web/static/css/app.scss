@@ -73,9 +73,12 @@ body {
     .location-info {
       display: flex;
       flex-direction: row;
-    }
 
-    .location-timestamp {
+      .weather-icon-container {
+        display: inline-block;
+        width: 30px;
+        text-align: center;
+      }
     }
   }
 }

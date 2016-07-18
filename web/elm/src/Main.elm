@@ -216,7 +216,9 @@ renderLocation location =
         [ (unixToDate >> formatTimestamp >> text) location.recordedAt
         ]
       , div [ class "flex-1 text-right" ]
-        [ weatherIcon ""
+        [ div [ class "weather-icon-container" ]
+            [ weatherIcon location.icon
+            ]
         , batteryStateIcon location.batteryState
         ]
       ]
@@ -230,6 +232,21 @@ batteryStateIcon batteryState =
     _ ->
       i [ class "fa fa-battery-full" ] []
 
+weatherIconClass : String -> String
+weatherIconClass icon =
+  case icon of
+    "clear-day" -> "wi-day-sunny"
+    "clear-night" -> "wi-night-clear"
+    "rain" -> "wi-rain"
+    "snow" -> "wi-snow"
+    "sleet" -> "wi-sleet"
+    "wind" -> "wi-windy"
+    "fog" -> "wi-fog"
+    "cloudy" -> "wi-cloudy"
+    "partly-cloudy-day" -> "wi-day-cloudy"
+    "partly-cloudy-night" -> "wi-night-partly-cloudy"
+    _ -> "wi-na"
+
 weatherIcon : String -> Html Msg
-weatherIcon _ =
-  i [ class "wi wi-day-lightning" ] []  
+weatherIcon icon =
+  i [ class ("wi " ++ weatherIconClass icon) ] []
