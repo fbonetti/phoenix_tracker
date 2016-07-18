@@ -54,7 +54,8 @@ exports.config = {
       'bower_components/weather-icons/font/weathericons-regular-webfont.eot',
       'bower_components/weather-icons/font/weathericons-regular-webfont.svg',
       'bower_components/weather-icons/font/weathericons-regular-webfont.ttf',
-      'bower_components/weather-icons/font/weathericons-regular-webfont.woff'
+      'bower_components/weather-icons/font/weathericons-regular-webfont.woff',
+      'bower_components/weather-icons/font/weathericons-regular-webfont.woff2'
     ],
 
     // Where to compile files to

@@ -59,7 +59,7 @@ elmApp.ports.outgoingLocations.subscribe(function(locations) {
 
 elmApp.ports.selectLocation.subscribe(function(location) {
   map = map || createMap();
-  map.setCenter({ lat: location.latitude, lng: location.longitude });
+  map.panTo({ lat: location.latitude, lng: location.longitude });
   openInfoWindow(location);
 });
 
@@ -80,7 +80,10 @@ const openInfoWindow = function(location) {
     <div>Temperature: <%- temperature || "N/A" %>°F</div>
     <div>Humidity: <%- humidity ? (humidity * 100).toFixed() : "N/A" %>%</div>
     <div>Visibility: <%- visibility || "N/A" %> mi</div>
-    <div>Wind bearing: <%- windBearing || "N/A" %>°</div>
+    <div>
+      Wind bearing: <%- windBearing || "N/A" %>°
+      <i class="wi wi-wind from-<%= Math.round(windBearing) %>-deg"></i>
+    </div>
     <div>Wind speed: <%- windSpeed || "N/A" %> mph</div>
   `);
 

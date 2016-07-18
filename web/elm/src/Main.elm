@@ -244,7 +244,7 @@ weatherIconClass icon =
     Just "fog" -> "wi-fog"
     Just "cloudy" -> "wi-cloudy"
     Just "partly-cloudy-day" -> "wi-day-cloudy"
-    Just "partly-cloudy-night" -> "wi-night-partly-cloudy"    
+    Just "partly-cloudy-night" -> "wi-night-partly-cloudy"
     _ -> "wi-na"
 
 weatherIcon : Maybe String -> Html Msg
