@@ -82,6 +82,11 @@ exports.config = {
           'bower_components/weather-icons/sass'
         ]
       }
+    },
+    postcss: {
+      processors: [
+        require('autoprefixer')(['last 8 versions'])
+      ]
     }
   },
 
