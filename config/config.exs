@@ -11,6 +11,7 @@ config :phoenix_tracker, PhoenixTracker.Endpoint,
   root: Path.dirname(__DIR__),
   secret_key_base: "KqRZqtS7SEl8EmwQE9Brhib3fDJJ74PTTlD0npiroCVbxLh7kEk7bMWyfWM2jOtu",
   spot_api_key: System.get_env("SPOT_API_KEY"),
+  forecast_io_api_key: System.get_env("FORECAST_IO_API_KEY"),
   render_errors: [accepts: ~w(html json)],
   pubsub: [name: PhoenixTracker.PubSub,
            adapter: Phoenix.PubSub.PG2]
