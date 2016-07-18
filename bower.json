@@ -1,0 +1,19 @@
+{
+  "name": "phoenix_tracker",
+  "version": "0.0.0",
+  "homepage": "https://github.com/fbonetti/phoenix_tracker",
+  "authors": [
+    "Frank Bonetti <frank.r.bonetti@gmail.com>"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "weather-icons": "^2.0.10"
+  }
+}

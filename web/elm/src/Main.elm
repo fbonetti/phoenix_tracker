@@ -46,13 +46,13 @@ type alias Location =
   , longitude : Float
   , recordedAt : Float
   , batteryState : String
-  , summary : String
-  , icon : String
-  , temperature : Float
-  , humidity : Float
-  , visibility : Float
-  , windBearing : Float
-  , windSpeed : Float
+  , summary : Maybe String
+  , icon : Maybe String
+  , temperature : Maybe Float
+  , humidity : Maybe Float
+  , visibility : Maybe Float
+  , windBearing : Maybe Float
+  , windSpeed : Maybe Float
   }
 
 model : Model
@@ -153,13 +153,13 @@ locationDecoder =
     |: ("longitude" := JD.float)
     |: ("recorded_at" := JD.float)
     |: ("battery_state" := JD.string)
-    |: ("summary" := JD.string)
-    |: ("icon" := JD.string)
-    |: ("temperature" := JD.float)
-    |: ("humidity" := JD.float)
-    |: ("visibility" := JD.float)
-    |: ("wind_bearing" := JD.float)
-    |: ("wind_speed" := JD.float)
+    |: (JD.maybe ("summary" := JD.string))
+    |: (JD.maybe ("icon" := JD.string))
+    |: (JD.maybe ("temperature" := JD.float))
+    |: (JD.maybe ("humidity" := JD.float))
+    |: (JD.maybe ("visibility" := JD.float))
+    |: (JD.maybe ("wind_bearing" := JD.float))
+    |: (JD.maybe ("wind_speed" := JD.float))
 
 locationsDecoder : JD.Decoder (List Location)
 locationsDecoder =
@@ -232,21 +232,21 @@ batteryStateIcon batteryState =
     _ ->
       i [ class "fa fa-battery-full" ] []
 
-weatherIconClass : String -> String
+weatherIconClass : Maybe String -> String
 weatherIconClass icon =
   case icon of
-    "clear-day" -> "wi-day-sunny"
-    "clear-night" -> "wi-night-clear"
-    "rain" -> "wi-rain"
-    "snow" -> "wi-snow"
-    "sleet" -> "wi-sleet"
-    "wind" -> "wi-windy"
-    "fog" -> "wi-fog"
-    "cloudy" -> "wi-cloudy"
-    "partly-cloudy-day" -> "wi-day-cloudy"
-    "partly-cloudy-night" -> "wi-night-partly-cloudy"
+    Just "clear-day" -> "wi-day-sunny"
+    Just "clear-night" -> "wi-night-clear"
+    Just "rain" -> "wi-rain"
+    Just "snow" -> "wi-snow"
+    Just "sleet" -> "wi-sleet"
+    Just "wind" -> "wi-windy"
+    Just "fog" -> "wi-fog"
+    Just "cloudy" -> "wi-cloudy"
+    Just "partly-cloudy-day" -> "wi-day-cloudy"
+    Just "partly-cloudy-night" -> "wi-night-partly-cloudy"    
     _ -> "wi-na"
 
-weatherIcon : String -> Html Msg
+weatherIcon : Maybe String -> Html Msg
 weatherIcon icon =
   i [ class ("wi " ++ weatherIconClass icon) ] []

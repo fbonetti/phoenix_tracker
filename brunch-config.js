@@ -35,7 +35,7 @@ exports.config = {
     assets: [
       /^(web\/static\/assets)/,
       /^(node_modules\/font-awesome)/,
-      /^(node_modules\/weather-icons)/
+      /^(bower_components\/weather-icons)/
     ]
   },
 
@@ -51,10 +51,10 @@ exports.config = {
       'node_modules/font-awesome/fonts/fontawesome-webfont.ttf',
       'node_modules/font-awesome/fonts/fontawesome-webfont.woff',
       'node_modules/font-awesome/fonts/fontawesome-webfont.woff2',
-      'node_modules/weather-icons/font/weathericons-regular-webfont.eot',
-      'node_modules/weather-icons/font/weathericons-regular-webfont.svg',
-      'node_modules/weather-icons/font/weathericons-regular-webfont.ttf',
-      'node_modules/weather-icons/font/weathericons-regular-webfont.woff'
+      'bower_components/weather-icons/font/weathericons-regular-webfont.eot',
+      'bower_components/weather-icons/font/weathericons-regular-webfont.svg',
+      'bower_components/weather-icons/font/weathericons-regular-webfont.ttf',
+      'bower_components/weather-icons/font/weathericons-regular-webfont.woff'
     ],
 
     // Where to compile files to
@@ -78,7 +78,7 @@ exports.config = {
         includePaths: [
           'node_modules/bootstrap/scss',
           'node_modules/font-awesome/scss',
-          'node_modules/weather-icons/css'
+          'bower_components/weather-icons/sass'
         ]
       }
     }
