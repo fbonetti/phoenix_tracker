@@ -1,7 +1,7 @@
 {
   "repository": {},
   "dependencies": {
-    "autoprefix": "^0.1.4",
+    "autoprefixer": "^6.3.7",
     "babel-brunch": "~6.0.0",
     "bootstrap": "^4.0.0-alpha.2",
     "bower": "^1.7.9",
