@@ -77,11 +77,11 @@ const openInfoWindow = function(location) {
     <div>Battery state: <%- batteryState %></div>
     </br>
     <div><strong>Weather data</strong></div>
-    <div>Temperature: <%- temperature %>°F</div>
-    <div>Humidity: <%- (humidity * 100).toFixed() %>%</div>
-    <div>Visibility: <%- visibility %> mi</div>
-    <div>Wind bearing: <%- windBearing %>°</div>
-    <div>Wind speed: <%- windSpeed %> mph</div>
+    <div>Temperature: <%- temperature || "N/A" %>°F</div>
+    <div>Humidity: <%- humidity ? (humidity * 100).toFixed() : "N/A" %>%</div>
+    <div>Visibility: <%- visibility || "N/A" %> mi</div>
+    <div>Wind bearing: <%- windBearing || "N/A" %>°</div>
+    <div>Wind speed: <%- windSpeed || "N/A" %> mph</div>
   `);
 
   infoWindow = new google.maps.InfoWindow({

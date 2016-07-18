@@ -10,11 +10,13 @@ config :phoenix_tracker, PhoenixTracker.Endpoint,
   url: [host: "localhost"],
   root: Path.dirname(__DIR__),
   secret_key_base: "KqRZqtS7SEl8EmwQE9Brhib3fDJJ74PTTlD0npiroCVbxLh7kEk7bMWyfWM2jOtu",
-  spot_api_key: System.get_env("SPOT_API_KEY"),
-  forecast_io_api_key: System.get_env("FORECAST_IO_API_KEY"),
   render_errors: [accepts: ~w(html json)],
   pubsub: [name: PhoenixTracker.PubSub,
            adapter: Phoenix.PubSub.PG2]
+
+config :phoenix_tracker,
+  spot_api_key: System.get_env("SPOT_API_KEY"),
+  forecast_io_api_key: System.get_env("FORECAST_IO_API_KEY")
 
 # Configures Elixir's Logger
 config :logger, :console,
