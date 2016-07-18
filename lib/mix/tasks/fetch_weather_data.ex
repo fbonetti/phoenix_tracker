@@ -20,8 +20,8 @@ defmodule Mix.Tasks.FetchWeatherData do
         temperature: weather_info["temperature"],
         humidity: weather_info["humidity"],
         visibility: weather_info["visibility"],
-        windBearing: weather_info["windBearing"],
-        windSpeed: weather_info["windSpeed"]
+        wind_bearing: weather_info["windBearing"],
+        wind_speed: weather_info["windSpeed"]
       }
 
       changeset = Location.changeset(location, fields)      

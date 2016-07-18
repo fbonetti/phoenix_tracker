@@ -9,9 +9,8 @@ import Http
 import Task exposing (Task)
 import Date exposing (Date)
 import Date.Format
-import Set
-import String
 import Dict
+import Json.Decode.Extra exposing ((|:))
 
 
 main : Program Never
@@ -47,6 +46,13 @@ type alias Location =
   , longitude : Float
   , recordedAt : Float
   , batteryState : String
+  , summary : String
+  , icon : String
+  , temperature : Float
+  , humidity : Float
+  , visibility : Float
+  , windBearing : Float
+  , windSpeed : Float
   }
 
 model : Model
@@ -141,14 +147,19 @@ uniqBy fn =
 
 locationDecoder : JD.Decoder Location
 locationDecoder =
-  JD.object5
-    Location
-    ("id" := JD.int)
-    ("latitude" := JD.float)
-    ("longitude" := JD.float)
-    ("recorded_at" := JD.float)
-    ("battery_state" := JD.string)
-    
+  JD.succeed Location
+    |: ("id" := JD.int)
+    |: ("latitude" := JD.float)
+    |: ("longitude" := JD.float)
+    |: ("recorded_at" := JD.float)
+    |: ("battery_state" := JD.string)
+    |: ("summary" := JD.string)
+    |: ("icon" := JD.string)
+    |: ("temperature" := JD.float)
+    |: ("humidity" := JD.float)
+    |: ("visibility" := JD.float)
+    |: ("wind_bearing" := JD.float)
+    |: ("wind_speed" := JD.float)
 
 locationsDecoder : JD.Decoder (List Location)
 locationsDecoder =

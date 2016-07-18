@@ -8,8 +8,8 @@ defmodule PhoenixTracker.Repo.Migrations.AddWeatherFieldsToLocations do
       add :temperature, :float
       add :humidity, :float
       add :visibility, :float
-      add :windBearing, :float
-      add :windSpeed, :float
+      add :wind_bearing, :float
+      add :wind_speed, :float
     end
   end
 end

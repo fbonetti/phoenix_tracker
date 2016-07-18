@@ -12,14 +12,14 @@ defmodule PhoenixTracker.Location do
     field :temperature, :float
     field :humidity, :float
     field :visibility, :float
-    field :windBearing, :float
-    field :windSpeed, :float
+    field :wind_bearing, :float
+    field :wind_speed, :float
 
     timestamps
   end
 
   @required_fields ~w(id latitude longitude recorded_at battery_state)
-  @optional_fields ~w(summary icon temperature humidity visibility windBearing windSpeed)
+  @optional_fields ~w(summary icon temperature humidity visibility wind_bearing wind_speed)
 
   @doc """
   Creates a changeset based on the `model` and `params`.

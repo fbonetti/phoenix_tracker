@@ -1,3 +1,5 @@
+import { values, template } from 'lodash';
+
 // Set up our Elm App
 const elmApp = Elm.App.fullscreen();
 
@@ -10,13 +12,14 @@ const createMap = function() {
 };
 
 let map;
-let markers = [];
+let markers = {};
 let markerPath;
+let infoWindow;
 
 elmApp.ports.outgoingLocations.subscribe(function(locations) {
   map = map || createMap();
 
-  markers.forEach(marker => {
+  values(markers).forEach(marker => {
     marker.setMap(null);
   });
 
@@ -27,7 +30,7 @@ elmApp.ports.outgoingLocations.subscribe(function(locations) {
   const bounds = new google.maps.LatLngBounds();
   const pathCoordinates = [];
 
-  markers = locations.map(location => {
+  locations.forEach(location => {
     const marker = new google.maps.Marker({
       position: {
         lat: location.latitude,
@@ -36,9 +39,11 @@ elmApp.ports.outgoingLocations.subscribe(function(locations) {
       map: map
     });
 
+    marker.addListener('click', openInfoWindow.bind(this, location));
+
     bounds.extend(marker.getPosition());
     pathCoordinates.push({ lat: location.latitude, lng: location.longitude });
-    return marker;
+    markers[location.id] = marker;
   });
 
   markerPath = new google.maps.Polyline({
@@ -55,4 +60,33 @@ elmApp.ports.outgoingLocations.subscribe(function(locations) {
 elmApp.ports.selectLocation.subscribe(function(location) {
   map = map || createMap();
   map.setCenter({ lat: location.latitude, lng: location.longitude });
+  openInfoWindow(location);
 });
+
+const openInfoWindow = function(location) {
+  map = map || createMap();
+
+  if (infoWindow) {
+    infoWindow.close();
+  }
+
+  const infoTemplate = template(`
+    <div><strong>Location info</strong></div>
+    <div>Coordinates: <%- latitude %>, <%- longitude %></div>
+    <div>Timestamp: <%- (new Date(recordedAt * 1000)) %></div>
+    <div>Battery state: <%- batteryState %></div>
+    </br>
+    <div><strong>Weather data</strong></div>
+    <div>Temperature: <%- temperature %>°F</div>
+    <div>Humidity: <%- (humidity * 100).toFixed() %>%</div>
+    <div>Visibility: <%- visibility %> mi</div>
+    <div>Wind bearing: <%- windBearing %>°</div>
+    <div>Wind speed: <%- windSpeed %> mph</div>
+  `);
+
+  infoWindow = new google.maps.InfoWindow({
+    content: infoTemplate(location)
+  });
+
+  infoWindow.open(map, markers[location.id]);
+};
