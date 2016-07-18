@@ -5,7 +5,7 @@ defmodule Mix.Tasks.FetchGpsData do
   require HTTPotion
   
   def run(_args) do
-    key = "0GbguunS8LnHtdnrO6132nvJJqZhY4qo3"
+    key = Application.fetch_env!(:phoenix_tracker, :spot_api_key)
     url = "https://api.findmespot.com/spot-main-web/consumer/rest-api/2.0/public/feed/#{key}/message.json"
     
     HTTPotion.start

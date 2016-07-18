@@ -68,3 +68,7 @@ config :phoenix_tracker, PhoenixTracker.Repo,
 # for the new static assets to be served after a hot upgrade:
 #
 #     config :phoenix_tracker, PhoenixTracker.Endpoint, root: "."
+
+# Finally import the config/prod.secret.exs
+# which should be versioned separately.
+import_config "prod.secret.exs", ignore_if_notexists: true
