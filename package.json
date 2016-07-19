@@ -9,7 +9,7 @@
     "clean-css-brunch": "~1.8.0",
     "css-brunch": "~1.7.0",
     "elm": "^0.17.1",
-    "elm-brunch": "https://github.com/fbonetti/elm-brunch.git",
+    "elm-brunch": "0.7.0",
     "font-awesome": "^4.6.3",
     "javascript-brunch": "~1.8.0",
     "lodash": "^4.13.1",

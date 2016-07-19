@@ -161,6 +161,15 @@ locationCoordinates : Location -> Coordinate
 locationCoordinates { latitude, longitude } =
   ( latitude, longitude )
 
+zip : List a -> List b -> List (a,b)
+zip = List.map2 (,)
+
+pairs : List a -> List (a,a)
+pairs list =
+  case list of
+    [] -> []
+    xs -> zip xs (List.tail xs |> Maybe.withDefault [])
+
 -- DECODERS
 
 
@@ -227,18 +236,38 @@ renderSection model =
 
 renderStats : List Location -> Html Msg
 renderStats locations =
-  div []
+  div [ class "panel-content" ]
     [ h3 [] [ text "Distance traveled" ]
     , (distanceTraveled >> toText) locations
+    , text " miles"
     , h3 [] [ text "Displacement" ]
-    , (distanceTraveled >> toText) locations
+    , (totalDisplacement >> toText) locations
+    , text " miles"
     , h3 [] [ text "# of Data points" ]
     , (List.length >> toText) locations
     ]
 
+{- Sum of all distances between coordinate pairs
+-}
 distanceTraveled : List Location -> Float
-distanceTraveled locations =
-  5
+distanceTraveled =
+  List.map locationCoordinates
+    >> pairs
+    >> List.foldl (\(first, second) dist -> dist + (Geodesy.distance first second Geodesy.Miles)) 0
+
+
+{- Distance between first and last location
+-}
+totalDisplacement : List Location -> Float
+totalDisplacement locations =
+  let
+    coordinateList = List.map locationCoordinates locations
+    head = List.head coordinateList
+    last = (List.head << List.reverse) coordinateList
+  in
+    Maybe.map2 (\head' tail' -> Geodesy.distance head' tail' Geodesy.Miles) head last
+      |> Maybe.withDefault 0
+
 
 renderDateFilter : Model -> Html Msg
 renderDateFilter { locations, dateFilter } =
@@ -256,7 +285,7 @@ renderDateFilter { locations, dateFilter } =
 
 renderLocations : List Location -> Html Msg
 renderLocations locations =
-  div [ class "location-list" ] (List.map renderLocation locations)
+  div [ class "panel-content" ] (List.map renderLocation locations)
 
 renderLocation : Location -> Html Msg
 renderLocation location =
