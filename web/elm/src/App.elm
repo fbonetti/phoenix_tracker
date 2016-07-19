@@ -1,6 +1,6 @@
 port module App exposing (..)
 
-import Html exposing (Html, button, div, text, h2, select, option, span, i)
+import Html exposing (Html, Attribute, button, div, text, h2, h3, select, option, span, i)
 import Html.Attributes exposing (class, id, value, selected)
 import Html.Events exposing (onInput, onClick)
 import Html.App as Html
@@ -11,6 +11,8 @@ import Date exposing (Date)
 import Date.Format
 import Dict
 import Json.Decode.Extra exposing ((|:))
+import String
+import Geodesy exposing (Coordinate)
 
 
 main : Program Never
@@ -38,6 +40,7 @@ type alias Model =
   { locations : List Location
   , error : String
   , dateFilter : String
+  , tab : Tab
   }
 
 type alias Location =
@@ -55,11 +58,16 @@ type alias Location =
   , windSpeed : Maybe Float
   }
 
+type Tab
+  = Logbook
+  | Stats
+
 model : Model
 model =
   { locations = []
   , error = ""
   , dateFilter = ""
+  , tab = Stats
   }
 
 
@@ -71,6 +79,7 @@ type Msg
   | SetError Http.Error
   | SetDateFilter String
   | SelectLocation Location
+  | SetTab Tab
   | NoOp
 
 
@@ -93,6 +102,8 @@ update msg model =
         ( model',  cmd )
     SelectLocation location ->
       ( model, selectLocation location )
+    SetTab tab ->
+      ( { model | tab = tab }, Cmd.none )
     NoOp ->
       ( model, Cmd.none )
 
@@ -119,6 +130,10 @@ fetchLocations =
 -- HELPERS
 
 
+classNames : List ( String, Bool ) -> Attribute Msg
+classNames =
+  List.filter snd >> List.map fst >> String.join " " >> class
+
 unixToDate : Float -> Date
 unixToDate =
   (*) 1000 >> Date.fromTime
@@ -141,6 +156,10 @@ uniqBy fn =
     buildDict = List.foldl (\item dict -> Dict.insert (fn item) item dict) Dict.empty
   in
     buildDict >> Dict.values
+
+locationCoordinates : Location -> Coordinate
+locationCoordinates { latitude, longitude } =
+  ( latitude, longitude )
 
 -- DECODERS
 
@@ -173,6 +192,7 @@ uniqueLocationDates locations =
 
 -- VIEW
 
+
 toText : a -> Html Msg
 toText =
   toString >> text
@@ -182,13 +202,43 @@ view model =
   div [ id "elm-container" ]
     [ div [ id "map" ] []
     , div [ id "info" ]
-      [ h2 [ class "title" ] [ text "Logbook" ]
+      [ div [ class "tabs" ]
+          [ h2 [ classNames [ ("tab", True), ("active", model.tab == Logbook) ], onClick (SetTab Logbook) ]
+              [ text "Logbook"
+              ]
+          , h2 [ classNames [ ("tab", True), ("active", model.tab == Stats) ], onClick (SetTab Stats) ]
+              [ text "Stats"
+              ]
+          ]
       , div [ class "filters" ]
           [ renderDateFilter model
           ]
-      , renderLocations (filteredLocations model)
+      , renderSection model
       ]
     ]
+
+renderSection : Model -> Html Msg
+renderSection model =
+  case model.tab of
+    Logbook ->
+      renderLocations (filteredLocations model)
+    Stats ->
+      renderStats (filteredLocations model)
+
+renderStats : List Location -> Html Msg
+renderStats locations =
+  div []
+    [ h3 [] [ text "Distance traveled" ]
+    , (distanceTraveled >> toText) locations
+    , h3 [] [ text "Displacement" ]
+    , (distanceTraveled >> toText) locations
+    , h3 [] [ text "# of Data points" ]
+    , (List.length >> toText) locations
+    ]
+
+distanceTraveled : List Location -> Float
+distanceTraveled locations =
+  5
 
 renderDateFilter : Model -> Html Msg
 renderDateFilter { locations, dateFilter } =

@@ -67,7 +67,7 @@ exports.config = {
     elmBrunch: {
       executablePath: "../../node_modules/elm/binwrappers",
       elmFolder: "web/elm",
-      mainModules: ["src/Main.elm"],
+      mainModules: ["src/App.elm"],
       outputFolder: "../static/vendor"
     },
     babel: {

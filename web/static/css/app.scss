@@ -62,8 +62,26 @@ body {
     flex: 1;
   }
 
-  .title {
-    margin: 0;
+  .tabs {
+    display: flex;
+
+    .tab {
+      flex: 1;
+      margin: 0;
+      border-right: 1px solid black;
+      text-align: center;
+      cursor: pointer;
+    }
+
+    .tab:last-child {
+      border-right: none;
+    }
+
+    .tab.active::before {
+      content: "•";
+      position: absolute;
+      margin-left: -20px;
+    }
   }
 
   .filters {
