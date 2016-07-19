@@ -67,7 +67,7 @@ model =
   { locations = []
   , error = ""
   , dateFilter = ""
-  , tab = Stats
+  , tab = Logbook
   }
 
 
