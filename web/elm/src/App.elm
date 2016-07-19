@@ -309,7 +309,7 @@ batteryStateIcon batteryState =
     "GOOD" ->
       i [ class "fa fa-battery-full" ] []
     _ ->
-      i [ class "fa fa-battery-full" ] []
+      i [ class "fa fa-battery-quarter" ] []
 
 weatherIconClass : Maybe String -> String
 weatherIconClass icon =
