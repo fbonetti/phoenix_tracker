@@ -119,10 +119,13 @@ body {
       display: flex;
       flex-direction: row;
 
-      .weather-icon-container {
-        display: inline-block;
-        width: 30px;
-        text-align: center;
+      .location-icons {
+        flex: 1;
+        text-align: right;
+
+        i {
+          margin-left: 5px;
+        }
       }
     }
   }

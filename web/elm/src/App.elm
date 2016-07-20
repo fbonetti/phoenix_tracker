@@ -309,7 +309,7 @@ renderLocation location =
       [ div []
           [ (unixToDate >> formatTimestamp >> text) location.recordedAt
           ]
-      , div [ class "flex-1 text-right" ]
+      , div [ class "location-icons" ]
           [ messageTypeIcon location.messageType
           , weatherIcon location.icon
           , batteryStateIcon location.batteryState
