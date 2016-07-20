@@ -14,6 +14,8 @@ defmodule PhoenixTracker.LocationView do
         |> :calendar.datetime_to_gregorian_seconds
         |> -(:calendar.datetime_to_gregorian_seconds({{1970, 1, 1}, {0, 0, 0}})),
       battery_state: location.battery_state,
+      message_type: location.message_type,
+      message_content: location.message_content,
       summary: location.summary,
       icon: location.icon,
       temperature: location.temperature,

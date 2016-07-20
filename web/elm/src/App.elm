@@ -49,6 +49,8 @@ type alias Location =
   , longitude : Float
   , recordedAt : Float
   , batteryState : String
+  , messageType : String
+  , messageContent : Maybe String
   , summary : Maybe String
   , icon : Maybe String
   , temperature : Maybe Float
@@ -181,6 +183,8 @@ locationDecoder =
     |: ("longitude" := JD.float)
     |: ("recorded_at" := JD.float)
     |: ("battery_state" := JD.string)
+    |: ("message_type" := JD.string)
+    |: (JD.maybe ("message_content" := JD.string))
     |: (JD.maybe ("summary" := JD.string))
     |: (JD.maybe ("icon" := JD.string))
     |: (JD.maybe ("temperature" := JD.float))
