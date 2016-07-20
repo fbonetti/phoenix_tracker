@@ -172,6 +172,13 @@ pairs list =
     [] -> []
     xs -> zip xs (List.tail xs |> Maybe.withDefault [])
 
+roundToNDecimalPlaces : Int -> Float -> Float
+roundToNDecimalPlaces n num =
+  num * (toFloat (10 ^ n))
+    |> round
+    |> toFloat
+    |> flip (/) (toFloat (10 ^ n))
+
 -- DECODERS
 
 
@@ -210,6 +217,10 @@ toText : a -> Html Msg
 toText =
   toString >> text
 
+nothing : Html Msg
+nothing =
+  text ""
+
 view : Model -> Html Msg
 view model =
   div [ id "elm-container" ]
@@ -242,10 +253,10 @@ renderStats : List Location -> Html Msg
 renderStats locations =
   div [ class "panel-content" ]
     [ h3 [] [ text "Distance traveled" ]
-    , (distanceTraveled >> toText) locations
+    , (distanceTraveled >> roundToNDecimalPlaces 2 >> toText) locations
     , text " miles"
     , h3 [] [ text "Displacement" ]
-    , (totalDisplacement >> toText) locations
+    , (totalDisplacement >> roundToNDecimalPlaces 2 >> toText) locations
     , text " miles"
     , h3 [] [ text "# of Data points" ]
     , (List.length >> toText) locations
@@ -296,14 +307,13 @@ renderLocation location =
   div [ class "location-block", onClick (SelectLocation location) ]
     [ div [ class "location-info" ]
       [ div []
-        [ (unixToDate >> formatTimestamp >> text) location.recordedAt
-        ]
+          [ (unixToDate >> formatTimestamp >> text) location.recordedAt
+          ]
       , div [ class "flex-1 text-right" ]
-        [ div [ class "weather-icon-container" ]
-            [ weatherIcon location.icon
-            ]
-        , batteryStateIcon location.batteryState
-        ]
+          [ messageTypeIcon location.messageType
+          , weatherIcon location.icon
+          , batteryStateIcon location.batteryState
+          ]
       ]
     ]
 
@@ -333,3 +343,11 @@ weatherIconClass icon =
 weatherIcon : Maybe String -> Html Msg
 weatherIcon icon =
   i [ class ("wi " ++ weatherIconClass icon) ] []
+
+messageTypeIcon : String -> Html Msg
+messageTypeIcon messageType =
+  case messageType of
+    "OK" ->
+      i [ class "fa fa-check" ] []
+    _ ->
+      nothing

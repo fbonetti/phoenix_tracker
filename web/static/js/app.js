@@ -85,6 +85,11 @@ const openInfoWindow = function(location) {
       <i class="wi wi-wind from-<%= Math.round(windBearing) %>-deg"></i>
     </div>
     <div>Wind speed: <%- windSpeed || "N/A" %> mph</div>
+    <% if (messageContent) { %>
+      </br>
+      <div><strong>Message</strong></div>
+      <div><%- messageContent %></div>
+    <% } %>
   `);
 
   infoWindow = new google.maps.InfoWindow({

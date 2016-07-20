@@ -18,7 +18,9 @@ defmodule Mix.Tasks.FetchGpsData do
           latitude: message["latitude"],
           longitude: message["longitude"],
           recorded_at: :calendar.gregorian_seconds_to_datetime(message["unixTime"] + epoch),
-          battery_state: message["batteryState"]
+          battery_state: message["batteryState"],
+          message_type: message["messageType"],
+          message_content: message["messageContent"]
         }
 
         changeset = Location.changeset(%Location{}, fields)
