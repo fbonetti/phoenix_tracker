@@ -349,5 +349,7 @@ messageTypeIcon messageType =
   case messageType of
     "OK" ->
       i [ class "fa fa-check" ] []
+    "CUSTOM" ->
+      i [ class "fa fa-comment-o" ] []
     _ ->
       nothing
