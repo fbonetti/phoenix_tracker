@@ -13,14 +13,19 @@ const createMap = function() {
 
 let map;
 let markers = {};
+let photosMarkers = {};
 let markerPath;
 let infoWindow;
 
-elmApp.ports.outgoingLocations.subscribe(function(locations) {
+elmApp.ports.outgoingLocationsAndPhotos.subscribe(function([ locations, photos ]) {
   map = map || createMap();
 
   values(markers).forEach(marker => {
     marker.setMap(null);
+  });
+
+  values(photosMarkers).forEach(photoMarker => {
+    photoMarker.setMap(null);
   });
 
   if (markerPath) {
@@ -44,6 +49,23 @@ elmApp.ports.outgoingLocations.subscribe(function(locations) {
     bounds.extend(marker.getPosition());
     pathCoordinates.push({ lat: location.latitude, lng: location.longitude });
     markers[location.id] = marker;
+  });
+
+  photos.forEach(photo => {
+    const marker = new google.maps.Marker({
+      position: {
+        lat: photo.latitude,
+        lng: photo.longitude
+      },
+      icon: {
+        url: photo.thumbUrl,
+        scaledSize: new google.maps.Size(30, 30)
+      },
+      map: map
+    });
+
+    bounds.extend(marker.getPosition());
+    photosMarkers[photo.id] = marker;
   });
 
   markerPath = new google.maps.Polyline({

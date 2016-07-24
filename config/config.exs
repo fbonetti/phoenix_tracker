@@ -16,12 +16,18 @@ config :phoenix_tracker, PhoenixTracker.Endpoint,
 
 config :phoenix_tracker,
   spot_api_key: System.get_env("SPOT_API_KEY"),
-  forecast_io_api_key: System.get_env("FORECAST_IO_API_KEY")
+  forecast_io_api_key: System.get_env("FORECAST_IO_API_KEY"),
+  ecto_repos: [PhoenixTracker.Repo]
 
 # Configures Elixir's Logger
 config :logger, :console,
   format: "$time $metadata[$level] $message\n",
   metadata: [:request_id]
+
+# Config Arc and AWS uploads
+config :arc,
+  bucket: "dev-phoenix-tracker",
+  version_timeout: 15_000 #milliseconds
 
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.

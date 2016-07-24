@@ -1,7 +1,7 @@
 port module App exposing (..)
 
-import Html exposing (Html, Attribute, button, div, text, h2, h3, select, option, span, i)
-import Html.Attributes exposing (class, id, value, selected)
+import Html exposing (Html, Attribute, button, div, text, h2, h3, select, option, span, i, form, input, img)
+import Html.Attributes exposing (class, id, value, selected, type', multiple, action, method, name, enctype, src)
 import Html.Events exposing (onInput, onClick)
 import Html.App as Html
 import Json.Decode as JD exposing ((:=))
@@ -18,11 +18,15 @@ import Geodesy exposing (Coordinate)
 main : Program Never
 main =
   Html.program
-    { init = (model, fetchLocations)
+    { init = init
     , view = view
     , update = update
     , subscriptions = subscriptions
     }
+
+init : ( Model, Cmd Msg )
+init =
+  ( model, Cmd.batch [ fetchPhotos, fetchLocations ] )
 
 
 -- SUBSCRIPTIONS
@@ -38,6 +42,7 @@ subscriptions model =
 
 type alias Model =
   { locations : List Location
+  , photos : List Photo
   , error : String
   , dateFilter : String
   , tab : Tab
@@ -60,16 +65,27 @@ type alias Location =
   , windSpeed : Maybe Float
   }
 
+type alias Photo =
+  { id : Int
+  , latitude : Float
+  , longitude : Float
+  , originalUrl : String
+  , thumbUrl : String
+  , insertedAt : Float
+  }
+
 type Tab
   = Logbook
+  | Photos
   | Stats
 
 model : Model
 model =
   { locations = []
+  , photos = []
   , error = ""
   , dateFilter = ""
-  , tab = Logbook
+  , tab = Photos
   }
 
 
@@ -78,6 +94,7 @@ model =
 
 type Msg
   = SetLocations (List Location)
+  | SetPhotos (List Photo)
   | SetError Http.Error
   | SetDateFilter String
   | SelectLocation Location
@@ -91,7 +108,13 @@ update msg model =
     SetLocations locations ->
       let
         model' = { model | locations = locations }
-        cmd = (filteredLocations >> outgoingLocations) model'
+        cmd = outgoingLocationsAndPhotos ( filteredLocations model', filteredPhotos model' )
+      in
+        ( model',  cmd )
+    SetPhotos photos ->
+      let
+        model' = { model | photos = photos }
+        cmd = outgoingLocationsAndPhotos ( filteredLocations model', filteredPhotos model' )
       in
         ( model',  cmd )
     SetError error ->
@@ -99,7 +122,7 @@ update msg model =
     SetDateFilter dateFilter ->
       let
         model' = { model | dateFilter = dateFilter }
-        cmd = (filteredLocations >> outgoingLocations) model'
+        cmd = outgoingLocationsAndPhotos ( filteredLocations model', filteredPhotos model' )
       in
         ( model',  cmd )
     SelectLocation location ->
@@ -118,9 +141,19 @@ filteredLocations { dateFilter, locations } =
       (\location -> (unixToDate >> dateToIso) location.recordedAt == dateFilter)
       locations
 
+filteredPhotos : Model -> List Photo
+filteredPhotos { dateFilter, photos } =
+  if dateFilter == "" then
+    photos
+  else
+    List.filter
+      (\photo -> (unixToDate >> dateToIso) photo.insertedAt == dateFilter)
+      photos
+
+
 -- COMMANDS
 
-port outgoingLocations : List Location -> Cmd msg
+port outgoingLocationsAndPhotos : ( List Location, List Photo ) -> Cmd msg
 port selectLocation : Location -> Cmd msg
 
 fetchLocations : Cmd Msg
@@ -128,6 +161,10 @@ fetchLocations =
   Http.get locationsDecoder "/api/locations"
     |> Task.perform SetError SetLocations
 
+fetchPhotos : Cmd Msg
+fetchPhotos =
+  Http.get photosDecoder "/api/photos"
+    |> Task.perform SetError SetPhotos
 
 -- HELPERS
 
@@ -204,6 +241,20 @@ locationsDecoder : JD.Decoder (List Location)
 locationsDecoder =
   JD.list locationDecoder
 
+photoDecoder : JD.Decoder Photo
+photoDecoder =
+  JD.succeed Photo
+    |: ("id" := JD.int)
+    |: ("latitude" := JD.float)
+    |: ("longitude" := JD.float)
+    |: ("original_url" := JD.string)
+    |: ("thumb_url" := JD.string)
+    |: ("inserted_at" := JD.float)
+
+photosDecoder : JD.Decoder (List Photo)
+photosDecoder =
+  JD.list photoDecoder
+
 uniqueLocationDates : List Location -> List Date
 uniqueLocationDates locations =
   List.map (\location -> unixToDate location.recordedAt) locations
@@ -230,6 +281,9 @@ view model =
           [ h2 [ classNames [ ("tab", True), ("active", model.tab == Logbook) ], onClick (SetTab Logbook) ]
               [ text "Logbook"
               ]
+          , h2 [ classNames [ ("tab", True), ("active", model.tab == Photos) ], onClick (SetTab Photos) ]
+              [ text "Photos"
+              ]
           , h2 [ classNames [ ("tab", True), ("active", model.tab == Stats) ], onClick (SetTab Stats) ]
               [ text "Stats"
               ]
@@ -246,8 +300,28 @@ renderSection model =
   case model.tab of
     Logbook ->
       renderLocations (filteredLocations model)
+    Photos ->
+      renderPhotos (filteredPhotos model)
     Stats ->
       renderStats (filteredLocations model)
+
+photoUploadForm : Html Msg
+photoUploadForm =
+  form [ action "/photos/upload", method "POST", enctype "multipart/form-data" ]
+    [ input [ type' "file", multiple False, name "asset" ] []
+    , input [ type' "submit" ] []
+    ]
+
+renderPhotos : List Photo -> Html Msg
+renderPhotos photos =
+  div [ class "panel-content" ]
+    [ photoUploadForm
+    , div [ class "photos" ] (List.map renderPhoto photos)
+    ]
+
+renderPhoto : Photo -> Html Msg
+renderPhoto { thumbUrl } =
+  img [ class "photo", src thumbUrl ] []
 
 renderStats : List Location -> Html Msg
 renderStats locations =

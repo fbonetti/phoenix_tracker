@@ -5,7 +5,6 @@ defmodule PhoenixTracker.Router do
     plug :accepts, ["html"]
     plug :fetch_session
     plug :fetch_flash
-    plug :protect_from_forgery
     plug :put_secure_browser_headers
   end
 
@@ -17,11 +16,13 @@ defmodule PhoenixTracker.Router do
     pipe_through :browser # Use the default browser stack
 
     get "/", PageController, :index
+    post "/photos/upload", PhotoController, :upload
   end
 
   scope "/api", PhoenixTracker do
     pipe_through :api
 
-    resources "/locations", LocationController
+    get "/locations", LocationController, :index
+    get "/photos", PhotoController, :index
   end
 end
