@@ -1,16 +1,22 @@
-module Routes exposing (..)
+module Routes exposing (Route(..), parseRoute)
 
 import Navigation exposing (Location)
-import UrlParser exposing (Parser, (</>), s, int, string, map, oneOf, parseHash)
+import UrlParser exposing (Parser, map, oneOf, s, (<?>), parsePath, stringParam)
 
 
 type Route
-    = Blog Int
-    | Search String
+    = Logbook (Maybe String)
+    | Stats (Maybe String)
 
 
-route : Parser (Route -> a) a
-route =
+router : Parser (Route -> a) a
+router =
     oneOf
-        [ map Blog (s "blog" </> int)
+        [ map Logbook (s "logbook" <?> stringParam "date")
+        , map Stats (s "stats" <?> stringParam "date")
         ]
+
+
+parseRoute : Location -> Route
+parseRoute =
+    parsePath router >> Maybe.withDefault (Logbook Nothing)

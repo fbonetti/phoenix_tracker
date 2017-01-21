@@ -13,16 +13,23 @@ import Dict
 import String
 import Geodesy exposing (Coordinate)
 import Tuple exposing (first, second)
+import Navigation
+import Routes exposing (parseRoute)
 
 
 main : Program Never Model Msg
 main =
-    Html.program
-        { init = ( model, fetchLocations )
+    Navigation.program UrlChange
+        { init = init
         , view = view
         , update = update
         , subscriptions = subscriptions
         }
+
+
+init : Navigation.Location -> ( Model, Cmd Msg )
+init urlLocation =
+    ( initModel urlLocation, fetchLocations )
 
 
 
@@ -43,6 +50,7 @@ type alias Model =
     , error : String
     , dateFilter : String
     , tab : Tab
+    , urlLocation : Navigation.Location
     }
 
 
@@ -69,13 +77,18 @@ type Tab
     | Stats
 
 
-model : Model
-model =
-    { locations = []
-    , error = ""
-    , dateFilter = ""
-    , tab = Logbook
-    }
+initModel : Navigation.Location -> Model
+initModel urlLocation =
+    let
+        model =
+            { locations = []
+            , error = ""
+            , dateFilter = ""
+            , tab = Logbook
+            , urlLocation = urlLocation
+            }
+    in
+        handleUrlChange urlLocation model
 
 
 
@@ -83,17 +96,37 @@ model =
 
 
 type Msg
-    = SetLocations (List Location)
+    = UrlChange Navigation.Location
+    | SetLocations (List Location)
     | SetError Http.Error
     | SetDateFilter String
     | SelectLocation Location
-    | SetTab Tab
+    | SelectTab Tab
     | NoOp
+
+
+handleUrlChange : Navigation.Location -> Model -> Model
+handleUrlChange urlLocation model =
+    case parseRoute urlLocation of
+        Routes.Logbook date ->
+            { model
+                | dateFilter = Maybe.withDefault "" date
+                , tab = Logbook
+            }
+
+        Routes.Stats date ->
+            { model
+                | dateFilter = Maybe.withDefault "" date
+                , tab = Stats
+            }
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
+        UrlChange urlLocation ->
+            ( handleUrlChange urlLocation model, Cmd.none )
+
         SetLocations locations ->
             let
                 model_ =
@@ -108,20 +141,18 @@ update msg model =
             ( { model | error = toString error }, Cmd.none )
 
         SetDateFilter dateFilter ->
-            let
-                model_ =
-                    { model | dateFilter = dateFilter }
-
-                cmd =
-                    (filteredLocations >> outgoingLocations) model_
-            in
-                ( model_, cmd )
+            ( model, changeUrlDateParam model dateFilter )
 
         SelectLocation location ->
             ( model, selectLocation location )
 
-        SetTab tab ->
-            ( { model | tab = tab }, Cmd.none )
+        SelectTab tab ->
+            case tab of
+                Logbook ->
+                    ( model, changeUrlPath model "logbook" )
+
+                Stats ->
+                    ( model, changeUrlPath model "stats" )
 
         NoOp ->
             ( model, Cmd.none )
@@ -151,6 +182,30 @@ fetchLocations : Cmd Msg
 fetchLocations =
     Http.get "/api/locations" locationsDecoder
         |> Http.send (Result.unify SetError SetLocations)
+
+
+changeUrlPath : Model -> String -> Cmd Msg
+changeUrlPath { urlLocation, dateFilter } path =
+    let
+        params =
+            if String.isEmpty dateFilter then
+                ""
+            else
+                "?date=" ++ dateFilter
+    in
+        Navigation.newUrl ("/" ++ path ++ params)
+
+
+changeUrlDateParam : Model -> String -> Cmd Msg
+changeUrlDateParam { urlLocation } dateFilter =
+    let
+        params =
+            if String.isEmpty dateFilter then
+                ""
+            else
+                "?date=" ++ dateFilter
+    in
+        Navigation.newUrl (urlLocation.origin ++ urlLocation.pathname ++ params)
 
 
 
@@ -275,10 +330,10 @@ view model =
         [ div [ id "map" ] []
         , div [ id "info" ]
             [ div [ class "tabs" ]
-                [ h2 [ classNames [ ( "tab", True ), ( "active", model.tab == Logbook ) ], onClick (SetTab Logbook) ]
+                [ h2 [ classNames [ ( "tab", True ), ( "active", model.tab == Logbook ) ], onClick (SelectTab Logbook) ]
                     [ text "Logbook"
                     ]
-                , h2 [ classNames [ ( "tab", True ), ( "active", model.tab == Stats ) ], onClick (SetTab Stats) ]
+                , h2 [ classNames [ ( "tab", True ), ( "active", model.tab == Stats ) ], onClick (SelectTab Stats) ]
                     [ text "Stats"
                     ]
                 ]

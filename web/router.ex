@@ -17,6 +17,8 @@ defmodule PhoenixTracker.Router do
     pipe_through :browser # Use the default browser stack
 
     get "/", PageController, :index
+    get "/logbook", PageController, :index
+    get "/stats", PageController, :index
   end
 
   scope "/api", PhoenixTracker do
