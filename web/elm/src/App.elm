@@ -125,7 +125,14 @@ update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         UrlChange urlLocation ->
-            ( handleUrlChange urlLocation model, Cmd.none )
+            let
+                model_ =
+                    handleUrlChange urlLocation model
+
+                cmd =
+                    (filteredLocations >> outgoingLocations) model_
+            in
+                ( model_, cmd )
 
         SetLocations locations ->
             let
@@ -197,15 +204,23 @@ changeUrlPath { urlLocation, dateFilter } path =
 
 
 changeUrlDateParam : Model -> String -> Cmd Msg
-changeUrlDateParam { urlLocation } dateFilter =
+changeUrlDateParam { urlLocation, tab } dateFilter =
     let
         params =
             if String.isEmpty dateFilter then
                 ""
             else
                 "?date=" ++ dateFilter
+
+        path =
+            case tab of
+                Logbook ->
+                    "logbook"
+
+                Stats ->
+                    "stats"
     in
-        Navigation.newUrl (urlLocation.origin ++ urlLocation.pathname ++ params)
+        Navigation.newUrl (urlLocation.origin ++ "/" ++ path ++ params)
 
 
 
