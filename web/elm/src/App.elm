@@ -3,19 +3,19 @@ port module App exposing (..)
 import Html exposing (Html, Attribute, button, div, text, h2, h3, select, option, span, i)
 import Html.Attributes exposing (class, id, value, selected)
 import Html.Events exposing (onInput, onClick)
-import Html.App as Html
-import Json.Decode as JD exposing ((:=))
+import Json.Decode as JD exposing (field)
+import Json.Decode.Pipeline exposing (decode, required, optional)
 import Http
-import Task exposing (Task)
+import Result.Utils as Result
 import Date exposing (Date)
 import Date.Format
 import Dict
-import Json.Decode.Extra exposing ((|:))
 import String
 import Geodesy exposing (Coordinate)
+import Tuple exposing (first, second)
 
 
-main : Program Never
+main : Program Never Model Msg
 main =
     Html.program
         { init = ( model, fetchLocations )
@@ -96,26 +96,26 @@ update msg model =
     case msg of
         SetLocations locations ->
             let
-                model' =
+                model_ =
                     { model | locations = locations }
 
                 cmd =
-                    (filteredLocations >> outgoingLocations) model'
+                    (filteredLocations >> outgoingLocations) model_
             in
-                ( model', cmd )
+                ( model_, cmd )
 
         SetError error ->
             ( { model | error = toString error }, Cmd.none )
 
         SetDateFilter dateFilter ->
             let
-                model' =
+                model_ =
                     { model | dateFilter = dateFilter }
 
                 cmd =
-                    (filteredLocations >> outgoingLocations) model'
+                    (filteredLocations >> outgoingLocations) model_
             in
-                ( model', cmd )
+                ( model_, cmd )
 
         SelectLocation location ->
             ( model, selectLocation location )
@@ -149,8 +149,8 @@ port selectLocation : Location -> Cmd msg
 
 fetchLocations : Cmd Msg
 fetchLocations =
-    Http.get locationsDecoder "/api/locations"
-        |> Task.perform SetError SetLocations
+    Http.get "/api/locations" locationsDecoder
+        |> Http.send (Result.unify SetError SetLocations)
 
 
 
@@ -159,7 +159,7 @@ fetchLocations =
 
 classNames : List ( String, Bool ) -> Attribute Msg
 classNames =
-    List.filter snd >> List.map fst >> String.join " " >> class
+    List.filter second >> List.map first >> String.join " " >> class
 
 
 unixToDate : Float -> Date
@@ -226,21 +226,21 @@ roundToNDecimalPlaces n num =
 
 locationDecoder : JD.Decoder Location
 locationDecoder =
-    JD.succeed Location
-        |: ("id" := JD.int)
-        |: ("latitude" := JD.float)
-        |: ("longitude" := JD.float)
-        |: ("recorded_at" := JD.float)
-        |: ("battery_state" := JD.string)
-        |: ("message_type" := JD.string)
-        |: (JD.maybe ("message_content" := JD.string))
-        |: (JD.maybe ("summary" := JD.string))
-        |: (JD.maybe ("icon" := JD.string))
-        |: (JD.maybe ("temperature" := JD.float))
-        |: (JD.maybe ("humidity" := JD.float))
-        |: (JD.maybe ("visibility" := JD.float))
-        |: (JD.maybe ("wind_bearing" := JD.float))
-        |: (JD.maybe ("wind_speed" := JD.float))
+    decode Location
+        |> required "id" JD.int
+        |> required "latitude" JD.float
+        |> required "longitude" JD.float
+        |> required "recorded_at" JD.float
+        |> required "battery_state" JD.string
+        |> required "message_type" JD.string
+        |> required "message_content" (JD.nullable JD.string)
+        |> required "summary" (JD.nullable JD.string)
+        |> required "icon" (JD.nullable JD.string)
+        |> required "temperature" (JD.nullable JD.float)
+        |> required "humidity" (JD.nullable JD.float)
+        |> required "visibility" (JD.nullable JD.float)
+        |> required "wind_bearing" (JD.nullable JD.float)
+        |> required "wind_speed" (JD.nullable JD.float)
 
 
 locationsDecoder : JD.Decoder (List Location)
@@ -341,7 +341,7 @@ totalDisplacement locations =
         last =
             (List.head << List.reverse) coordinateList
     in
-        Maybe.map2 (\head' tail' -> Geodesy.distance head' tail' Geodesy.Miles) head last
+        Maybe.map2 (\head_ tail_ -> Geodesy.distance head_ tail_ Geodesy.Miles) head last
             |> Maybe.withDefault 0
 
 
@@ -350,13 +350,13 @@ renderDateFilter { locations, dateFilter } =
     let
         mapping date =
             let
-                value' =
+                value_ =
                     dateToIso date
 
-                label' =
+                label_ =
                     Date.Format.format "%a, %b %d %Y" date
             in
-                option [ value value', selected (value' == dateFilter) ] [ text label' ]
+                option [ value value_, selected (value_ == dateFilter) ] [ text label_ ]
 
         options =
             List.map mapping (uniqueLocationDates locations)
